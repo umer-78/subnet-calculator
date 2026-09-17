@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Subnet Calculator</title>
+  <meta name="description" content="IPv4 subnet, split and VLSM calculator. Runs entirely in your browser.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230f766e'/><path d='M8 22h16M8 16h16M8 10h16' stroke='white' stroke-width='3' stroke-linecap='round'/></svg>">
+  <link rel="stylesheet" href="src/base.css">
+  <link rel="stylesheet" href="src/app.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <h1>Subnet Calculator</h1>
+        <p>IPv4 network details, equal splits and VLSM planning. Nothing leaves your browser.</p>
+      </div>
+      <a href="https://github.com/umer-78/subnet-calculator">Source on GitHub</a>
+    </header>
+
+    <section class="card">
+      <form id="calcForm" class="row" autocomplete="off">
+        <div>
+          <label for="cidr">Address with prefix or mask</label>
+          <input id="cidr" class="mono" value="192.168.10.77/24" placeholder="10.0.0.1/8 or 10.0.0.1 255.0.0.0" spellcheck="false">
+        </div>
+        <button class="primary" type="submit">Calculate</button>
+      </form>
+      <p class="error" id="calcError" role="alert"></p>
+      <dl class="facts" id="facts"></dl>
+    </section>
+
+    <div class="grid two" style="margin-top:16px">
+      <section class="card">
+        <h2>Split into equal subnets</h2>
+        <form id="splitForm" class="row">
+          <div>
+            <label for="newPrefix">New prefix</label>
+            <select id="newPrefix"></select>
+          </div>
+          <button type="submit">Split</button>
+        </form>
+        <p class="error" id="splitError" role="alert"></p>
+        <p class="muted" id="splitSummary"></p>
+        <div class="table-wrap"><table id="splitTable" hidden>
+          <thead><tr><th>Subnet</th><th>Hosts</th><th>Range</th><th>Broadcast</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </section>
+
+      <section class="card">
+        <h2>VLSM planner</h2>
+        <p class="muted" style="margin-top:0">One requirement per line: <span class="mono">name, hosts</span>. Subnets are allocated largest first inside the network above.</p>
+        <form id="vlsmForm">
+          <label for="reqs" class="sr-only">Requirements</label>
+          <textarea id="reqs" rows="5" class="mono" spellcheck="false">Staff, 100
+Servers, 50
+Guests, 20
+WAN link, 2</textarea>
+          <div class="row" style="margin-top:10px"><button type="submit">Plan subnets</button></div>
+        </form>
+        <p class="error" id="vlsmError" role="alert"></p>
+        <p class="muted" id="vlsmSummary"></p>
+        <div class="table-wrap"><table id="vlsmTable" hidden>
+          <thead><tr><th>Name</th><th>Needs</th><th>Subnet</th><th>Usable</th><th>Range</th></tr></thead>
+          <tbody></tbody>
+        </table></div>
+      </section>
+    </div>
+
+    <footer>Built by <a href="https://github.com/umer-78">Umer Hashmi</a> · MIT licensed</footer>
+  </div>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

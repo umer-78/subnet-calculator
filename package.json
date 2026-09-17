@@ -1,0 +1,13 @@
+{
+  "name": "subnet-calculator",
+  "version": "1.0.0",
+  "description": "IPv4 subnet and VLSM calculator that runs in the browser.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test",
+    "start": "python3 -m http.server 8080"
+  },
+  "author": "Umer Hashmi",
+  "license": "MIT"
+}
