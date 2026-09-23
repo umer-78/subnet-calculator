@@ -7,7 +7,7 @@
 **Live demo:** https://umer-78.github.io/subnet-calculator/
 
 An IPv4 subnet calculator for network engineers and students (CCNA, Packet Tracer
-labs). It has no framework and no build step, and everything runs in the browser.
+labs). No framework, no build step — everything runs in the browser.
 
 ![Screenshot](docs/screenshot.png)
 
