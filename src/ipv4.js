@@ -146,7 +146,7 @@ export function vlsm(networkIp, prefix, requirements) {
     const size = 2 ** (32 - r.prefix);
     cursor = Math.ceil(cursor / size) * size; // align to the block boundary
     if (cursor + size > parentEnd) {
-      throw new Error(`not enough space for "${r.name}" (${r.hosts} hosts needs a /${r.prefix})`);
+      throw new Error(`not enough space for "${r.name}" (${r.hosts} hosts need a /${r.prefix})`);
     }
     allocations.push({ name: r.name, hostsRequested: r.hosts, ...describe(cursor >>> 0, r.prefix) });
     cursor += size;
