@@ -359,6 +359,21 @@ WAN link, 2</textarea>
           <tbody></tbody>
         </table></div>
       </section>
+
+      <section class="card" style="animation-delay: 0.26s">
+        <h2>Route summarization</h2>
+        <p class="desc">One network per line. Returns the fewest equivalent CIDRs and the smallest single supernet that covers them all.</p>
+        <form id="sumForm">
+          <label for="sumList" class="sr-only">Networks to summarize</label>
+          <textarea id="sumList" rows="5" class="mono" spellcheck="false">10.1.0.0/24
+10.1.1.0/24
+10.1.2.0/24
+10.1.3.0/24</textarea>
+          <div class="row" style="margin-top:10px"><button type="submit">Summarize</button></div>
+        </form>
+        <p class="error" id="sumError" role="alert"></p>
+        <dl class="facts" id="sumFacts"></dl>
+      </section>
     </div>
 
     <footer>Runs offline · no data leaves your device · MIT licensed · Built by <a href="https://github.com/umer-78">Umer Hashmi</a> · <a href="https://github.com/umer-78/subnet-calculator">Source on GitHub</a></footer>

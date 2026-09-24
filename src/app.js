@@ -1,4 +1,4 @@
-import { parseCidr, describe, split, vlsm } from './ipv4.js';
+import { parseCidr, describe, split, vlsm, summarize, supernet } from './ipv4.js';
 
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => n.toLocaleString('en-US');
@@ -92,9 +92,28 @@ function renderVlsm() {
   }
 }
 
+function renderSummary() {
+  $('sumError').textContent = '';
+  $('sumFacts').innerHTML = '';
+  try {
+    const list = $('sumList').value.split('\n').map((l) => l.trim()).filter(Boolean);
+    const blocks = summarize(list);
+    const rows = [
+      ['Summarized routes', blocks.join(', ')],
+      ['Routes saved', `${fmt(list.length)} → ${fmt(blocks.length)}`],
+      ['Single supernet', supernet(list)],
+    ];
+    $('sumFacts').innerHTML = rows.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd class="big">${esc(v)}</dd></div>`).join('');
+  } catch (err) {
+    $('sumError').textContent = err.message;
+  }
+}
+
+$('sumForm').addEventListener('submit', (e) => { e.preventDefault(); renderSummary(); });
 $('calcForm').addEventListener('submit', (e) => { e.preventDefault(); if (calculate()) { renderSplit(); renderVlsm(); } });
 $('splitForm').addEventListener('submit', (e) => { e.preventDefault(); renderSplit(); });
 $('vlsmForm').addEventListener('submit', (e) => { e.preventDefault(); renderVlsm(); });
 
 if (location.hash.length > 1) $('cidr').value = decodeURIComponent(location.hash.slice(1));
 if (calculate()) { renderSplit(); renderVlsm(); }
+renderSummary();

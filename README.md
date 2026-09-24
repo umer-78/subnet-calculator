@@ -21,6 +21,8 @@ labs). No framework, no build step — everything runs in the browser.
 - **Equal split** into 2ⁿ subnets
 - **VLSM planner**: give it named host requirements and it packs them
   largest-first without overlap, reporting what is left
+- **Route summarization**: merge a list of networks into the fewest
+  equivalent CIDRs, plus the smallest single supernet covering them
 - Shareable links: the address is kept in the URL hash
 - Light and dark theme, keyboard accessible, works on phones
 

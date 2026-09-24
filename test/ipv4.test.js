@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseIp, formatIp, parseCidr, prefixFromMask, describe, split, vlsm, prefixForHosts, contains, addressType } from '../src/ipv4.js';
+import { parseIp, formatIp, parseCidr, prefixFromMask, describe, split, vlsm, prefixForHosts, contains, addressType, summarize, supernet, rangeToCidrs } from '../src/ipv4.js';
 
 test('parse and format round-trip', () => {
   for (const ip of ['0.0.0.0', '10.1.2.3', '192.168.100.254', '255.255.255.255']) {
@@ -90,4 +90,33 @@ test('contains and address types', () => {
   assert.equal(addressType(parseIp('127.0.0.1')), 'Loopback');
   assert.equal(addressType(parseIp('100.100.1.1')), 'Carrier-grade NAT (RFC 6598)');
   assert.equal(addressType(parseIp('255.255.255.255')), 'Limited broadcast');
+});
+
+test('summarize merges contiguous blocks', () => {
+  assert.deepEqual(summarize(['10.0.0.0/24', '10.0.1.0/24', '10.0.2.0/24', '10.0.3.0/24']), ['10.0.0.0/22']);
+});
+
+test('summarize keeps a non-aligned remainder separate', () => {
+  assert.deepEqual(summarize(['10.0.0.0/24', '10.0.1.0/24', '10.0.2.0/24']), ['10.0.0.0/23', '10.0.2.0/24']);
+});
+
+test('summarize drops overlaps and ignores host bits', () => {
+  assert.deepEqual(summarize(['192.168.1.5/24', '192.168.1.0/25']), ['192.168.1.0/24']);
+  assert.deepEqual(summarize(['0.0.0.0/1', '128.0.0.0/1']), ['0.0.0.0/0']);
+});
+
+test('summarize rejects empty and invalid input', () => {
+  assert.throws(() => summarize([]));
+  assert.throws(() => summarize(['300.1.1.1/24']));
+});
+
+test('supernet finds the smallest covering block', () => {
+  assert.equal(supernet(['10.0.1.0/24', '10.0.2.0/24']), '10.0.0.0/22');
+  assert.equal(supernet(['192.168.5.0/24']), '192.168.5.0/24');
+  assert.equal(supernet(['1.0.0.0/8', '200.0.0.0/8']), '0.0.0.0/0');
+});
+
+test('rangeToCidrs covers ranges exactly', () => {
+  assert.deepEqual(rangeToCidrs(0, 2 ** 32 - 1), ['0.0.0.0/0']);
+  assert.deepEqual(rangeToCidrs(1, 6), ['0.0.0.1/32', '0.0.0.2/31', '0.0.0.4/31', '0.0.0.6/32']);
 });

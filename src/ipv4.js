@@ -160,3 +160,57 @@ export function contains(networkIp, prefix, ip) {
   const mask = maskFromPrefix(prefix);
   return ((networkIp & mask) >>> 0) === ((ip & mask) >>> 0);
 }
+
+/** Convert an inclusive integer range [start, end] into the fewest CIDR blocks. */
+export function rangeToCidrs(start, end) {
+  const out = [];
+  let cur = start;
+  while (cur <= end) {
+    // largest block aligned at `cur` (lowest set bit) that stays inside the range
+    let size = cur === 0 ? 2 ** 32 : (cur & -cur) >>> 0;
+    while (cur + size - 1 > end) size /= 2;
+    out.push(`${formatIp(cur >>> 0)}/${32 - Math.log2(size)}`);
+    cur += size;
+  }
+  return out;
+}
+
+/**
+ * Route summarization: merge a list of CIDRs into the minimal equivalent set.
+ * Overlapping and adjacent blocks are combined; hosts bits are ignored.
+ */
+export function summarize(cidrs) {
+  if (!cidrs.length) throw new Error('enter at least one network');
+  const ranges = cidrs
+    .map((c) => {
+      const { ip, prefix } = parseCidr(c);
+      const start = (ip & maskFromPrefix(prefix)) >>> 0;
+      return [start, start + 2 ** (32 - prefix) - 1];
+    })
+    .sort((a, b) => a[0] - b[0]);
+  const merged = [];
+  for (const [s, e] of ranges) {
+    const last = merged[merged.length - 1];
+    if (last && s <= last[1] + 1) last[1] = Math.max(last[1], e);
+    else merged.push([s, e]);
+  }
+  return merged.flatMap(([s, e]) => rangeToCidrs(s, e));
+}
+
+/** Smallest single CIDR block that covers every network in the list. */
+export function supernet(cidrs) {
+  if (!cidrs.length) throw new Error('enter at least one network');
+  let lo = Infinity;
+  let hi = -Infinity;
+  for (const c of cidrs) {
+    const { ip, prefix } = parseCidr(c);
+    const start = (ip & maskFromPrefix(prefix)) >>> 0;
+    lo = Math.min(lo, start);
+    hi = Math.max(hi, start + 2 ** (32 - prefix) - 1);
+  }
+  let prefix = 32;
+  // shorten the prefix until lo and hi share the same network bits
+  while (prefix > 0 && ((lo & maskFromPrefix(prefix)) >>> 0) !== ((hi & maskFromPrefix(prefix)) >>> 0)) prefix--;
+  const network = (lo & maskFromPrefix(prefix)) >>> 0;
+  return `${formatIp(network)}/${prefix}`;
+}
