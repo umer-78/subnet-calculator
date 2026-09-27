@@ -1,6 +1,8 @@
 # Subnet Calculator
 
 [![CI](https://github.com/umer-78/subnet-calculator/actions/workflows/ci.yml/badge.svg)](https://github.com/umer-78/subnet-calculator/actions/workflows/ci.yml)
+
+[![IPv4 Subnet Calculator: the live demo](.github/preview.jpg)](https://umer-78.github.io/subnet-calculator/)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-f7df1e)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
